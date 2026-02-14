@@ -1,24 +1,44 @@
-import { useWriteContract } from 'wagmi';
-import { factoryAbi } from '../contracts/abi/EscrowFactory';
-import { FACTORY_ADDRESS } from '../contracts/addresses';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { parseEther } from 'viem'
+import { factoryAbi } from '../contracts/abi/EscrowFactory'
+import { FACTORY_ADDRESS } from '../contracts/addresses'
+import { useState } from 'react'
 
 export function useCreateEscrow() {
+  const [hash, setHash] = useState<`0x${string}` | undefined>()
 
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContractAsync, isPending } = useWriteContract()
 
-  function createEscrow(buyer: string, seller: string) {
-    writeContract({
+  const { isLoading: isConfirming, isSuccess } =
+    useWaitForTransactionReceipt({
+      hash,
+    })
+
+  async function createEscrow(
+    buyer: `0x${string}`,
+    seller: `0x${string}`,
+    amountEth: string,
+    deadlineSeconds: number
+  ) {
+    const txHash = await writeContractAsync({
       address: FACTORY_ADDRESS,
       abi: factoryAbi,
       functionName: 'createEscrow',
       args: [
         buyer,
         seller,
-        BigInt(10_000_000_000_000_000), // 0.01 ETH
-        86400
+        parseEther(amountEth),
+        BigInt(deadlineSeconds),
       ],
-    });
+    })
+
+    setHash(txHash)
   }
 
-  return { createEscrow, isPending };
+  return {
+    createEscrow,
+    isPending,
+    isConfirming,
+    isSuccess,
+  }
 }

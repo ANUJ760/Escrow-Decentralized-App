@@ -40,5 +40,6 @@ export function useCreateEscrow() {
     isPending,
     isConfirming,
     isSuccess,
+    hash,
   }
 }

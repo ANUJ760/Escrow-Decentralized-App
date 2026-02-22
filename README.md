@@ -7,76 +7,60 @@ A secure, full-stack escrow application built on Ethereum. This platform enables
 ```bash
 escrow/
 ├── Backend-Contracts/      # Smart Contracts (Foundry)
-│   ├── src/               # Solidity source files
-│   ├── script/            # Deployment scripts
-│   ├── test/              # Foundry tests
-│   └── foundry.toml       # Configuration
-│
+├── backend-app/            # Arbitration & IPFS API (Node.js/Express)
 └── frontend/               # Frontend Application
-    ├── src/
-    │   ├── app/           # Next.js App Router pages
-    │   ├── components/    # UI Components (Glassmorphism)
-    │   ├── hooks/         # Custom Wagmi hooks
-    │   └── contracts/     # ABIs and Addresses
-    └── ...
 ```
 
 ## Tech Stack
 
-- **Smart Contracts**: Solidity, Foundry (Development & Testing)
+- **Smart Contracts**: Solidity, Foundry
+- **Arbitration Engine**: Node.js, Express, OpenAI/OpenRouter (AI-driven verdicts)
 - **Frontend**: Next.js 16, TypeScript, Tailwind CSS v4, RainbowKit, Wagmi
-- **Development**: The frontend architecture was accelerated using **AI assistance** to ensure a robust, modern, and aesthetic user experience.
+- **Storage**: IPFS (via Pinata) for evidence persistence
 
-## Smart Contracts
+## AI Arbitration Workflow
 
-The backend relies on three core contracts:
-
-1.  **Escrow.sol**: Manages individual transactions, funds, and state lifecycles.
-2.  **EscrowFactory.sol**: Factory pattern to deploy and track escrow instances.
-3.  **Arbitrator.sol**: Handles dispute resolution and fair fund distribution.
-
-**Key Features:**
--   Reentrancy protection (OpenZeppelin)
--   Strict state machine (Created -> Funded -> In Progress -> Completed)
--   Role-based access control (Buyer, Seller, Arbitrator)
+This platform features an automated AI arbitration service to resolve disputes fairly:
+1. **Evidence Collection**: Buyers and sellers submit text/image evidence.
+2. **IPFS Storage**: Evidence is pinned to IPFS for decentralization.
+3. **AI Verdict**: When a dispute is raised, the Arbitrator can request an AI verdict.
+4. **Analysis**: The backend fetches evidence from IPFS and uses GPT-4/AI models to analyze the contract terms vs evidence.
+5. **Resolution**: The AI provides a weighted recommendation, allowing the Arbitrator to finalize the resolution on-chain.
 
 ## Setup & Installation
 
 ### 1. Smart Contracts
-
 ```bash
 cd Backend-Contracts
-
-# Build & Test
 forge build
 forge test
-
-# Deploy
-forge script script/DeployEscrow.s.sol:DeployEscrow --rpc-url <RPC_URL> --private-key <KEY> --broadcast
 ```
 
-### 2. Frontend
-
+### 2. Arbitration Backend
 ```bash
-cd frontend
-
-# Install dependencies
+cd backend-app
 npm install
-
-# Setup env
-cp .env.example .env
-
-# Run dev server
+# Setup .env with OPENAI_API_KEY, PINATA_API_KEY, etc.
 npm run dev
 ```
 
-## Usage
+### 3. Frontend
+```bash
+cd frontend
+npm install
+# Ensure NEXT_PUBLIC_AI_BACKEND_URL points to the backend
+npm run dev
+```
 
-1.  **Create**: Buyer initializes escrow with Seller address, amount, and deadline.
-2.  **Fund**: Buyer deposits ETH.
-3.  **Work**: Seller accepts and completes the task.
-4.  **Complete**: Buyer approves work; funds are released.
-5.  **Dispute**: Arbitrator resolves conflicts if they arise.
+## Environment Variables
+
+### Backend (`backend-app/.env`)
+- `PORT`: Server port (default 3001)
+- `OPENAI_API_KEY`: API key for AI processing
+- `PINATA_JWT`: For IPFS evidence pinning
+
+### Frontend (`frontend/.env`)
+- `NEXT_PUBLIC_AI_BACKEND_URL`: URL of the arbitration service (e.g., http://localhost:3001)
 
 ## License
 

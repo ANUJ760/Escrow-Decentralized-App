@@ -10,6 +10,7 @@ import { useRaiseDispute } from '../hooks/useRaiseDispute'
 import { useWithdrawFunds } from '../hooks/useWithdrawFunds'
 import { useCancelEscrow } from '../hooks/useCancelEscrow'
 import { useEffect } from 'react'
+import TransactionStatus from './TransactionStatus'
 
 interface EscrowActionsProps {
     escrowAddress: `0x${string}`
@@ -19,16 +20,16 @@ export default function EscrowActions({ escrowAddress }: EscrowActionsProps) {
     const { address } = useAccount()
     const { buyer, seller, amount, state, fundsWithdrawn, refetchState } = useEscrowDetails(escrowAddress)
 
-    const { fundEscrow, isPending: isFunding, isSuccess: fundSuccess } = useFundEscrow()
-    const { sellerAcceptWork, isPending: isAccepting, isSuccess: acceptSuccess } = useSellerAcceptWork()
-    const { submitWork, isPending: isSubmitting, isSuccess: submitSuccess } = useSubmitWork()
-    const { verifyWork, isPending: isVerifying, isSuccess: verifySuccess } = useVerifyWork()
-    const { raiseDispute, isPending: isDisputing, isSuccess: disputeSuccess } = useRaiseDispute()
-    const { withdrawFunds, isPending: isWithdrawing, isSuccess: withdrawSuccess } = useWithdrawFunds()
-    const { cancelEscrow, isPending: isCancelling, isSuccess: cancelSuccess } = useCancelEscrow()
+    const { fundEscrow, isPending: isFunding, isSuccess: fundSuccess, hash: fundHash } = useFundEscrow()
+    const { sellerAcceptWork, isPending: isAccepting, isSuccess: acceptSuccess, hash: acceptHash } = useSellerAcceptWork()
+    const { submitWork, isPending: isSubmitting, isSuccess: submitSuccess, hash: submitHash } = useSubmitWork()
+    const { verifyWork, isPending: isVerifying, isSuccess: verifySuccess, hash: verifyHash } = useVerifyWork()
+    const { raiseDispute, isPending: isDisputing, isSuccess: disputeSuccess, hash: disputeHash } = useRaiseDispute()
+    const { withdrawFunds, isPending: isWithdrawing, isSuccess: withdrawSuccess, hash: withdrawHash } = useWithdrawFunds()
+    const { cancelEscrow, isPending: isCancelling, isSuccess: cancelSuccess, hash: cancelHash } = useCancelEscrow()
 
-    const isBuyer = address?.toLowerCase() === buyer?.toLowerCase()
-    const isSeller = address?.toLowerCase() === seller?.toLowerCase()
+    const isBuyer = address?.toLowerCase() === (buyer as string)?.toLowerCase()
+    const isSeller = address?.toLowerCase() === (seller as string)?.toLowerCase()
 
     useEffect(() => {
         if (fundSuccess || acceptSuccess || submitSuccess || verifySuccess ||
@@ -42,38 +43,43 @@ export default function EscrowActions({ escrowAddress }: EscrowActionsProps) {
         // State 0: CREATED
         if (state === 0 && isBuyer) {
             return (
-                <button
-                    onClick={() => amount && fundEscrow(escrowAddress, amount)}
-                    disabled={isFunding}
-                    className="btn-primary w-full"
-                >
-                    {isFunding ? 'Funding...' : 'Fund Escrow'}
-                </button>
+                <div className="space-y-4">
+                    <button
+                        onClick={() => amount && fundEscrow(escrowAddress, amount as bigint)}
+                        disabled={isFunding}
+                        className="btn-primary w-full py-6 text-xl"
+                    >
+                        {isFunding ? 'Funding...' : 'Deposit Funds'}
+                    </button>
+                    <TransactionStatus isPending={isFunding} isSuccess={fundSuccess} hash={fundHash} />
+                </div>
             )
         }
 
         // State 1: FUNDED
         if (state === 1) {
             return (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {isSeller && (
                         <button
                             onClick={() => sellerAcceptWork(escrowAddress)}
                             disabled={isAccepting}
-                            className="btn-primary w-full"
+                            className="btn-primary w-full py-6 text-xl"
                         >
-                            {isAccepting ? 'Accepting...' : 'Accept Work'}
+                            {isAccepting ? 'Accepting...' : 'Accept Assignment'}
                         </button>
                     )}
                     {isBuyer && (
                         <button
                             onClick={() => cancelEscrow(escrowAddress)}
                             disabled={isCancelling}
-                            className="btn-secondary w-full"
+                            className="btn-secondary w-full py-4 text-xs font-bold uppercase tracking-widest text-gray-500"
                         >
-                            {isCancelling ? 'Cancelling...' : 'Cancel (if deadline passed)'}
+                            {isCancelling ? 'Cancelling...' : 'Cancel Contract'}
                         </button>
                     )}
+                    <TransactionStatus isPending={isAccepting} isSuccess={acceptSuccess} hash={acceptHash} />
+                    <TransactionStatus isPending={isCancelling} isSuccess={cancelSuccess} hash={cancelHash} />
                 </div>
             )
         }
@@ -81,34 +87,39 @@ export default function EscrowActions({ escrowAddress }: EscrowActionsProps) {
         // State 2: IN_PROGRESS
         if (state === 2 && isSeller) {
             return (
-                <button
-                    onClick={() => submitWork(escrowAddress)}
-                    disabled={isSubmitting}
-                    className="btn-primary w-full"
-                >
-                    {isSubmitting ? 'Submitting...' : 'Submit Work'}
-                </button>
+                <div className="space-y-4">
+                    <button
+                        onClick={() => submitWork(escrowAddress)}
+                        disabled={isSubmitting}
+                        className="btn-primary w-full py-6 text-xl"
+                    >
+                        {isSubmitting ? 'Submitting...' : 'Submit Deliverable'}
+                    </button>
+                    <TransactionStatus isPending={isSubmitting} isSuccess={submitSuccess} hash={submitHash} />
+                </div>
             )
         }
 
         // State 3: SUBMITTED
         if (state === 3 && isBuyer) {
             return (
-                <div className="space-y-3">
+                <div className="space-y-6">
                     <button
                         onClick={() => verifyWork(escrowAddress)}
                         disabled={isVerifying}
-                        className="btn-primary w-full"
+                        className="btn-primary w-full py-6 text-xl"
                     >
-                        {isVerifying ? 'Verifying...' : 'Approve Work'}
+                        {isVerifying ? 'Verifying...' : 'Approve & Release Funds'}
                     </button>
                     <button
                         onClick={() => raiseDispute(escrowAddress)}
                         disabled={isDisputing}
-                        className="btn-danger w-full"
+                        className="btn-danger w-full py-4 text-xs font-bold uppercase tracking-widest"
                     >
-                        {isDisputing ? 'Disputing...' : 'Raise Dispute'}
+                        {isDisputing ? 'Disputing...' : 'Raise Formal Dispute'}
                     </button>
+                    <TransactionStatus isPending={isVerifying} isSuccess={verifySuccess} hash={verifyHash} />
+                    <TransactionStatus isPending={isDisputing} isSuccess={disputeSuccess} hash={disputeHash} />
                 </div>
             )
         }
@@ -116,54 +127,35 @@ export default function EscrowActions({ escrowAddress }: EscrowActionsProps) {
         // State 4: DISPUTED
         if (state === 4) {
             return (
-                <div className="glass-card p-4 bg-yellow-500/10 border-yellow-500/30 text-center">
-                    <p className="text-yellow-300 font-semibold">Waiting for arbitrator to resolve dispute</p>
+                <div className="py-8 text-center border-t border-black/5">
+                    <p className="text-gray-500 italic text-sm">Waiting for arbitrator resolution</p>
                 </div>
             )
         }
 
-        // State 5: RESOLVED
-        if (state === 5 && !fundsWithdrawn) {
-            return (
-                <button
-                    onClick={() => withdrawFunds(escrowAddress)}
-                    disabled={isWithdrawing}
-                    className="btn-primary w-full"
-                >
-                    {isWithdrawing ? 'Withdrawing...' : 'Withdraw Funds'}
-                </button>
-            )
-        }
+        // State 5: RESOLVED, 6: COMPLETED, 7: CANCELLED
+        if ((state === 5 || state === 6 || state === 7) && !fundsWithdrawn) {
+            const canWithdraw = (state === 5 && (isBuyer || isSeller)) || (state === 6 && isSeller) || (state === 7 && isBuyer);
 
-        // State 6: COMPLETED
-        if (state === 6 && isSeller && !fundsWithdrawn) {
-            return (
-                <button
-                    onClick={() => withdrawFunds(escrowAddress)}
-                    disabled={isWithdrawing}
-                    className="btn-primary w-full"
-                >
-                    {isWithdrawing ? 'Withdrawing...' : 'Withdraw Funds'}
-                </button>
-            )
-        }
-
-        // State 7: CANCELLED
-        if (state === 7 && isBuyer && !fundsWithdrawn) {
-            return (
-                <button
-                    onClick={() => withdrawFunds(escrowAddress)}
-                    disabled={isWithdrawing}
-                    className="btn-primary w-full"
-                >
-                    {isWithdrawing ? 'Withdrawing...' : 'Withdraw Funds'}
-                </button>
-            )
+            if (canWithdraw) {
+                return (
+                    <div className="space-y-4">
+                        <button
+                            onClick={() => withdrawFunds(escrowAddress)}
+                            disabled={isWithdrawing}
+                            className="btn-primary w-full py-6 text-xl"
+                        >
+                            {isWithdrawing ? 'Withdrawing...' : 'Withdraw Funds'}
+                        </button>
+                        <TransactionStatus isPending={isWithdrawing} isSuccess={withdrawSuccess} hash={withdrawHash} />
+                    </div>
+                )
+            }
         }
 
         return (
-            <div className="text-center text-gray-400 py-4">
-                No actions available
+            <div className="text-gray-400 py-4 text-xs uppercase tracking-widest font-bold">
+                Status: Finalized
             </div>
         )
     }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useResolveDispute } from '../../hooks/useResolveDispute';
 import { ARBITRATOR_ADDRESS } from '../../contracts/addresses';
+import TransactionStatus from '../../components/TransactionStatus';
 
 export default function ArbitratorPage() {
     const { address, isConnected } = useAccount();
@@ -29,18 +30,17 @@ export default function ArbitratorPage() {
     if (!mounted) {
         return (
             <main className="min-h-screen flex items-center justify-center">
-                <div className="animate-pulse text-gray-400">Loading...</div>
+                <div className="animate-pulse text-gray-400">Loading Dashboard...</div>
             </main>
         );
     }
 
     if (!isConnected) {
         return (
-            <main className="min-h-screen flex items-center justify-center">
-                <div className="glass-card p-12 text-center max-w-md">
-                    <div className="text-6xl mb-6">🔒</div>
-                    <h2 className="text-2xl font-bold mb-4 text-white">Wallet Not Connected</h2>
-                    <p className="text-gray-400">Please connect your wallet</p>
+            <main className="min-h-screen py-24 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto flex flex-col items-center justify-center space-y-8">
+                    <h2 className="text-5xl font-black text-black text-center">Wallet Not Connected</h2>
+                    <p className="text-xl text-gray-600">Please connect your authorized arbitrator wallet.</p>
                 </div>
             </main>
         );
@@ -48,139 +48,110 @@ export default function ArbitratorPage() {
 
     if (!isArbitrator) {
         return (
-            <main className="min-h-screen flex items-center justify-center">
-                <div className="glass-card p-12 text-center max-w-md">
-                    <div className="text-6xl mb-6">⚖️</div>
-                    <h2 className="text-2xl font-bold mb-4 text-white">Access Denied</h2>
-                    <p className="text-gray-400 mb-4">
-                        You are not authorized to access the arbitrator dashboard
+            <main className="min-h-screen py-24 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto flex flex-col items-center justify-center space-y-8">
+                    <h2 className="text-5xl font-black text-black text-center">Access Restricted</h2>
+                    <p className="text-xl text-gray-600 text-center max-w-lg">
+                        This dashboard is reserved for the platform's official arbitrator.
                     </p>
-                    <p className="text-xs text-gray-500 font-mono break-all">
-                        Arbitrator: {ARBITRATOR_ADDRESS}
-                    </p>
+                    <div className="glass-card p-4 font-mono text-xs opacity-50">
+                        Required Address: {ARBITRATOR_ADDRESS}
+                    </div>
                 </div>
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen py-12 px-4">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">
-                        <span className="gradient-text">Arbitrator Dashboard</span>
+        <main className="min-h-screen py-24 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto space-y-20">
+                <div className="space-y-4 border-b border-black/10 pb-10">
+                    <h1 className="text-8xl font-black text-black leading-none">
+                        Arbitration
                     </h1>
-                    <p className="text-gray-400">Resolve disputes and manage escrow conflicts</p>
-                </div>
-
-                {/* Arbitrator Info */}
-                <div className="glass-card p-6 mb-8 bg-indigo-500/10 border-indigo-500/30">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="text-3xl">⚖️</div>
-                        <h2 className="text-xl font-semibold text-white">Arbitrator Status</h2>
-                    </div>
-                    <p className="text-sm text-gray-300 mb-2">You are authorized as the arbitrator</p>
-                    <p className="text-xs text-gray-400 font-mono break-all">{address}</p>
+                    <p className="text-2xl text-gray-600">Resolve disputes and maintain network integrity.</p>
                 </div>
 
                 {/* Resolve Dispute Form */}
-                <div className="glass-card p-8">
-                    <h2 className="text-2xl font-semibold mb-6 text-white">Resolve Dispute</h2>
-
-                    <div className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                Escrow Contract Address
+                <div className="space-y-12">
+                    <div className="glass-card p-12 space-y-10">
+                        <div className="space-y-2">
+                            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">
+                                Escrow Contract Identifier
                             </label>
                             <input
-                                placeholder="0x..."
+                                placeholder="Enter address 0x..."
                                 value={escrowAddress}
                                 onChange={(e) => setEscrowAddress(e.target.value)}
-                                className="input-field"
+                                className="input-field text-xl py-6"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-3">
-                                Select Winner
+                        <div className="space-y-4">
+                            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">
+                                Determination
                             </label>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <button
                                     onClick={() => setSelectedWinner('buyer')}
-                                    className={`p-6 rounded-xl border-2 transition-all ${selectedWinner === 'buyer'
-                                            ? 'border-indigo-500 bg-indigo-500/20'
-                                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                                    className={`p-10 rounded-2xl border-4 transition-all text-left space-y-2 ${selectedWinner === 'buyer'
+                                        ? 'border-blue-500 bg-blue-50/50'
+                                        : 'border-black/5 bg-white/20 hover:border-black/10'
                                         }`}
                                 >
-                                    <div className="text-3xl mb-2">👤</div>
-                                    <div className="font-semibold text-white">Buyer Wins</div>
-                                    <div className="text-xs text-gray-400 mt-1">Refund to buyer</div>
+                                    <div className="text-3xl font-black text-black">Buyer Wins</div>
+                                    <p className="text-sm text-gray-600">Refund transaction to the buyer.</p>
                                 </button>
 
                                 <button
                                     onClick={() => setSelectedWinner('seller')}
-                                    className={`p-6 rounded-xl border-2 transition-all ${selectedWinner === 'seller'
-                                            ? 'border-purple-500 bg-purple-500/20'
-                                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                                    className={`p-10 rounded-2xl border-4 transition-all text-left space-y-2 ${selectedWinner === 'seller'
+                                        ? 'border-purple-500 bg-purple-50/50'
+                                        : 'border-black/5 bg-white/20 hover:border-black/10'
                                         }`}
                                 >
-                                    <div className="text-3xl mb-2">🛠️</div>
-                                    <div className="font-semibold text-white">Seller Wins</div>
-                                    <div className="text-xs text-gray-400 mt-1">Release to seller</div>
+                                    <div className="text-3xl font-black text-black">Seller Wins</div>
+                                    <p className="text-sm text-gray-600">Release funds to the provider.</p>
                                 </button>
                             </div>
                         </div>
 
-                        <button
-                            onClick={handleResolve}
-                            disabled={!selectedWinner || !escrowAddress || isPending || isConfirming}
-                            className="btn-primary w-full text-lg py-4"
-                        >
-                            {isPending || isConfirming ? 'Resolving...' : 'Resolve Dispute'}
-                        </button>
+                        <div className="pt-6">
+                            <button
+                                onClick={handleResolve}
+                                disabled={!selectedWinner || !escrowAddress || isPending || isConfirming}
+                                className="btn-primary w-full py-6 text-2xl font-black"
+                            >
+                                {isPending || isConfirming ? "Broadcasting Decision..." : "Execute Resolution"}
+                            </button>
+                        </div>
 
-                        {isSuccess && (
-                            <div className="glass-card p-4 bg-green-500/10 border-green-500/30">
-                                <div className="flex items-center gap-2 text-green-300">
-                                    <span>✓</span>
-                                    <span className="font-semibold">Dispute resolved successfully!</span>
-                                </div>
-                                {hash && (
-                                    <a
-                                        href={`https://sepolia.etherscan.io/tx/${hash}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm text-blue-400 hover:underline block mt-2"
-                                    >
-                                        View on Etherscan →
-                                    </a>
-                                )}
-                            </div>
-                        )}
+                        <TransactionStatus
+                            isPending={isPending}
+                            isConfirming={isConfirming}
+                            isSuccess={isSuccess}
+                            hash={hash}
+                            successMessage="Resolution successfully recorded on-chain."
+                        />
                     </div>
-                </div>
 
-                {/* Info Section */}
-                <div className="glass-card p-6 mt-8">
-                    <h3 className="text-lg font-semibold mb-4 text-white">Arbitrator Guidelines</h3>
-                    <ul className="space-y-2 text-sm text-gray-400">
-                        <li className="flex items-start gap-2">
-                            <span className="text-indigo-400 mt-0.5">•</span>
-                            <span>Review all evidence and communications from both parties</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-indigo-400 mt-0.5">•</span>
-                            <span>Make fair and impartial decisions based on the facts</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-indigo-400 mt-0.5">•</span>
-                            <span>Ensure the escrow contract is in DISPUTED state before resolving</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-indigo-400 mt-0.5">•</span>
-                            <span>The winner will be able to withdraw the funds after resolution</span>
-                        </li>
-                    </ul>
+                    <div className="space-y-8 pt-10 border-t border-black/5">
+                        <h3 className="text-3xl font-black text-black">Protocol Guidelines</h3>
+                        <div className="grid md:grid-cols-2 gap-10">
+                            <div className="space-y-2">
+                                <h4 className="text-lg font-bold">Impartiality</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Decisions must be based solely on the evidence provided via IPFS and agreement terms.
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <h4 className="text-lg font-bold">Finality</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    On-chain resolutions are permanent. Ensure the transaction details are correct before broadcasting.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

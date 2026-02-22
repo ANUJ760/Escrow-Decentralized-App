@@ -35,65 +35,73 @@ export default function CreateEscrow() {
   };
 
   return (
-    <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="glass-card p-12 space-y-12">
+      <div className="space-y-4">
+        <h2 className="text-4xl font-black text-black">Terms of Trade</h2>
+        <p className="text-gray-600">Define the conditions for this decentralized contract.</p>
+      </div>
 
-      <div className="flex flex-col gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Seller Address
+      <div className="space-y-10">
+        <div className="space-y-2">
+          <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">
+            Counterparty (Seller Address)
           </label>
           <input
             placeholder="0x..."
             value={seller}
             onChange={(e) => setSeller(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-field text-xl py-6"
           />
           {seller && !isAddress(seller) && (
-            <p className="text-xs text-red-600 mt-1">Invalid address</p>
+            <p className="text-xs text-red-600 font-bold uppercase mt-2">! Invalid Ethereum Address</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount (ETH)
-          </label>
-          <input
-            type="number"
-            step="0.001"
-            placeholder="0.1"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="grid md:grid-cols-2 gap-10">
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">
+              Amount to Lock (ETH)
+            </label>
+            <input
+              type="number"
+              step="0.001"
+              placeholder="0.1"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="input-field text-4xl font-black py-6"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-widest text-gray-500 font-bold">
+              Contract Deadline (Days)
+            </label>
+            <input
+              type="number"
+              placeholder="7"
+              value={deadlineDays}
+              onChange={(e) => setDeadlineDays(e.target.value)}
+              className="input-field text-4xl font-black py-6"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Deadline (Days)
-          </label>
-          <input
-            type="number"
-            placeholder="7"
-            value={deadlineDays}
-            onChange={(e) => setDeadlineDays(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="pt-6">
+          <button
+            onClick={handleCreate}
+            disabled={!isValidForm || isPending || isConfirming}
+            className="btn-primary w-full py-6 text-2xl font-black"
+          >
+            {isPending || isConfirming ? "Broadcasting..." : "Initiate Escrow Contract"}
+          </button>
         </div>
-
-        <button
-          onClick={handleCreate}
-          disabled={!isValidForm || isPending || isConfirming}
-          className="btn-primary"
-        >
-          {isPending || isConfirming ? "Creating..." : "Create Escrow"}
-        </button>
 
         <TransactionStatus
           isPending={isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}
           hash={hash}
-          successMessage="Escrow created successfully!"
+          successMessage="Escrow contract has been initialized."
         />
       </div>
     </div>

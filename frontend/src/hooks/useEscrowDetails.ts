@@ -51,6 +51,20 @@ export function useEscrowDetails(escrowAddress: `0x${string}` | undefined) {
         query: { enabled: !!escrowAddress },
     })
 
+    const { data: buyerEvidenceCID } = useReadContract({
+        address: escrowAddress,
+        abi: escrowAbi,
+        functionName: 'buyerEvidenceCID',
+        query: { enabled: !!escrowAddress },
+    })
+
+    const { data: sellerEvidenceCID } = useReadContract({
+        address: escrowAddress,
+        abi: escrowAbi,
+        functionName: 'sellerEvidenceCID',
+        query: { enabled: !!escrowAddress },
+    })
+
     return {
         buyer,
         seller,
@@ -59,6 +73,8 @@ export function useEscrowDetails(escrowAddress: `0x${string}` | undefined) {
         arbitrator,
         fundsWithdrawn,
         disputeWinner,
+        buyerEvidenceCID,
+        sellerEvidenceCID,
         refetchState,
     }
 }

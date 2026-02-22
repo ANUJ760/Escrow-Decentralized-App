@@ -29,53 +29,54 @@ export default function EscrowCard({ escrowAddress, onSelect }: EscrowCardProps)
         fundsWithdrawn,
     } = useEscrowDetails(escrowAddress)
 
-    const stateLabel = state !== undefined ? STATE_LABELS[state] : 'Loading...'
+    const stateLabel = state != null ? STATE_LABELS[Number(state)] : 'Loading...'
     const stateColor =
-        state === 6 ? 'bg-green-100 text-green-800' :
-            state === 7 ? 'bg-gray-100 text-gray-800' :
-                state === 4 ? 'bg-red-100 text-red-800' :
-                    state === 5 ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
+        state === 6 ? 'bg-green-500/10 text-green-700' :
+            state === 7 ? 'bg-gray-500/10 text-gray-700' :
+                state === 4 ? 'bg-red-500/10 text-red-700' :
+                    state === 5 ? 'bg-yellow-500/10 text-yellow-700' :
+                        'bg-blue-500/10 text-blue-700'
 
     return (
         <div
-            className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+            className="glass-card hover:bg-white/50 transition-all p-8 cursor-pointer group"
             onClick={onSelect}
         >
-            <div className="flex justify-between items-start mb-3">
-                <div className="text-sm font-mono text-gray-600">
-                    {escrowAddress.slice(0, 6)}...{escrowAddress.slice(-4)}
+            <div className="flex justify-between items-center mb-6">
+                <div className="text-xs font-mono text-gray-500 uppercase tracking-widest">
+                    {escrowAddress.slice(0, 10)}...{escrowAddress.slice(-6)}
                 </div>
-                <span className={`px-2 py-1 rounded text-xs font-semibold ${stateColor}`}>
+                <span className={`status-badge ${stateColor} px-3 py-1 text-[10px]`}>
                     {stateLabel}
                 </span>
             </div>
 
-            <div className="space-y-2 text-sm">
-                <div>
-                    <span className="text-gray-500">Amount:</span>{' '}
-                    <span className="font-semibold">
-                        {amount ? formatEther(amount) : '0'} ETH
+            <div className="space-y-6">
+                <div className="flex items-baseline justify-between">
+                    <span className="text-6xl font-black text-black">
+                        {amount ? formatEther(amount as bigint) : '0'}
                     </span>
+                    <span className="text-2xl text-gray-500 font-bold ml-2">ETH</span>
                 </div>
 
-                <div>
-                    <span className="text-gray-500">Buyer:</span>{' '}
-                    <span className="font-mono text-xs">
-                        {buyer ? `${buyer.slice(0, 6)}...${buyer.slice(-4)}` : 'N/A'}
-                    </span>
+                <div className="space-y-1 border-t border-black/5 pt-4">
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Buyer</span>
+                        <span className="font-mono text-black">
+                            {buyer ? `${(buyer as string).slice(0, 6)}...${(buyer as string).slice(-4)}` : 'N/A'}
+                        </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Seller</span>
+                        <span className="font-mono text-black">
+                            {seller ? `${(seller as string).slice(0, 6)}...${(seller as string).slice(-4)}` : 'N/A'}
+                        </span>
+                    </div>
                 </div>
 
-                <div>
-                    <span className="text-gray-500">Seller:</span>{' '}
-                    <span className="font-mono text-xs">
-                        {seller ? `${seller.slice(0, 6)}...${seller.slice(-4)}` : 'N/A'}
-                    </span>
-                </div>
-
-                {fundsWithdrawn && (
-                    <div className="text-xs text-green-600 font-semibold">
-                        ✓ Funds Withdrawn
+                {Boolean(fundsWithdrawn) && (
+                    <div className="text-xs text-green-600 font-bold uppercase tracking-tighter">
+                        Funds Successfully Withdrawn
                     </div>
                 )}
             </div>

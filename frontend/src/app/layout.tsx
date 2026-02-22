@@ -4,7 +4,7 @@ import Navigation from '../components/Navigation';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Escrow dApp - Secure Decentralized Escrow",
+  title: "Escrow dApp, a secure decentralized escrow!",
   description: "A secure, decentralized escrow platform built on Ethereum",
 };
 

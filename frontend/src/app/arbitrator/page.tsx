@@ -1,22 +1,19 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useResolveDispute } from '../../hooks/useResolveDispute';
 import { ARBITRATOR_ADDRESS } from '../../contracts/addresses';
 import TransactionStatus from '../../components/TransactionStatus';
+import { useHydrated } from '../../hooks/useHydrated';
 
 export default function ArbitratorPage() {
     const { address, isConnected } = useAccount();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useHydrated();
     const [escrowAddress, setEscrowAddress] = useState("");
     const [selectedWinner, setSelectedWinner] = useState<'buyer' | 'seller' | null>(null);
 
     const { resolveDispute, isPending, isConfirming, isSuccess, hash } = useResolveDispute();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const isArbitrator = address?.toLowerCase() === ARBITRATOR_ADDRESS.toLowerCase();
 
@@ -52,7 +49,7 @@ export default function ArbitratorPage() {
                 <div className="max-w-4xl mx-auto flex flex-col items-center justify-center space-y-8">
                     <h2 className="text-5xl font-black text-black text-center">Access Restricted</h2>
                     <p className="text-xl text-gray-600 text-center max-w-lg">
-                        This dashboard is reserved for the platform's official arbitrator.
+                        This dashboard is reserved for the platform&apos;s official arbitrator.
                     </p>
                     <div className="glass-card p-4 font-mono text-xs opacity-50">
                         Required Address: {ARBITRATOR_ADDRESS}

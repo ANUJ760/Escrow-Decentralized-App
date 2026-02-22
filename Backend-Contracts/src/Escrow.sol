@@ -166,15 +166,15 @@ contract Escrow is Interface_Escrow, ReentrancyGuard {
         if (!success) {
             revert InvalidState();
         }
+    }
 
-        function submitEvidence(string calldata cid) external {
-            if (msg.sender == buyer){
-                buyerEvidenceCID = cid;
-            } else if (msg.sender == seller){
-                sellerEvidenceCID = cid;
-            } else {
-                revert InvalidState();
-            }
+    function submitEvidence(string calldata cid) external {
+        if (msg.sender == buyer){
+            buyerEvidenceCID = cid;
+        } else if (msg.sender == seller){
+            sellerEvidenceCID = cid;
+        } else {
+            revert InvalidState();
         }
     }
 

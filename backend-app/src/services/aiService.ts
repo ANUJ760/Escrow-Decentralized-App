@@ -1,10 +1,13 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-});
-
 export async function getVerdict(evidence: string) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error("OPENAI_API_KEY is not set");
+    }
+
+    const openai = new OpenAI({ apiKey });
+
     const prompt = `
   You are a neutral escrow arbitrator.
   Based on the evidence below, decide:

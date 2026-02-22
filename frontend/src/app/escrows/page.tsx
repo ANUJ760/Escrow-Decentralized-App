@@ -1,17 +1,14 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
+import { useHydrated } from '../../hooks/useHydrated';
 
 export default function EscrowsPage() {
     const { isConnected } = useAccount();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useHydrated();
     const [escrowAddress, setEscrowAddress] = useState("");
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     if (!mounted) {
         return (
@@ -73,7 +70,7 @@ export default function EscrowsPage() {
                 <div className="py-20 text-center space-y-6 bg-white/20 rounded-3xl border border-black/5">
                     <h3 className="text-3xl font-black text-black">Empty Dashboard</h3>
                     <p className="text-xl text-gray-600">
-                        You haven't participated in any escrows yet.
+                        You haven&apos;t participated in any escrows yet.
                     </p>
                     <Link href="/create" className="btn-secondary inline-block mt-4">
                         Start Your First Trade

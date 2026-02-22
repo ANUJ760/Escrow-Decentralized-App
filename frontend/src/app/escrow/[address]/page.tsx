@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEscrowDetails } from '../../../hooks/useEscrowDetails';
 import EscrowActions from '../../../components/EscrowActions';
 import DisputeResolution from '../../../components/DisputeResolution';
 import { formatEther } from 'viem';
+import { useHydrated } from '../../../hooks/useHydrated';
 
 const STATE_LABELS = ['Created', 'Funded', 'In Progress', 'Submitted', 'Disputed', 'Resolved', 'Completed', 'Cancelled'];
 
@@ -25,7 +25,7 @@ export default function EscrowDetailsPage() {
     const router = useRouter();
     const escrowAddress = params.address as `0x${string}`;
 
-    const [mounted, setMounted] = useState(false);
+    const mounted = useHydrated();
 
     const {
         buyer,
@@ -36,10 +36,6 @@ export default function EscrowDetailsPage() {
         fundsWithdrawn,
         disputeWinner,
     } = useEscrowDetails(escrowAddress);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     if (!mounted) {
         return (

@@ -20,6 +20,10 @@ router.post("/", async (req: Request, res: Response) => {
         res.json({ buyerWins });
     } catch (err) {
         console.error("AI resolution failed:", err);
+        if (err instanceof Error && err.message.includes("OPENAI_API_KEY")) {
+            res.status(503).json({ error: "AI service is not configured" });
+            return;
+        }
         res.status(500).json({ error: "AI processing failed" });
     }
 });

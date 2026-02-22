@@ -1,18 +1,14 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import CreateEscrow from '../../components/CreateEscrow';
+import { useHydrated } from '../../hooks/useHydrated';
 
 export default function CreatePage() {
     const router = useRouter();
     const { isConnected } = useAccount();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useHydrated();
 
     if (!mounted) {
         return (

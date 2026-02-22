@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useCreateEscrow } from '../hooks/useCreateEscrow';
 import { isAddress } from 'viem';
 import TransactionStatus from './TransactionStatus';
+import { useHydrated } from '../hooks/useHydrated';
 
 export default function CreateEscrow() {
   const { address } = useAccount();
@@ -13,11 +14,7 @@ export default function CreateEscrow() {
   const [seller, setSeller] = useState("");
   const [amount, setAmount] = useState("");
   const [deadlineDays, setDeadlineDays] = useState("7");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useHydrated();
 
   const isValidForm =
     mounted &&

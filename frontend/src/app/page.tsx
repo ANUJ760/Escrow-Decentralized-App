@@ -1,16 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
+import { useHydrated } from '../hooks/useHydrated';
 
 export default function Home() {
   const { isConnected } = useAccount();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useHydrated();
 
   if (!mounted) {
     return (

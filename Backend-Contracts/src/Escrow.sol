@@ -29,6 +29,8 @@ contract Escrow is Interface_Escrow, ReentrancyGuard {
     address public immutable seller;
     address public immutable arbitrator;
     address public disputeWinner;
+    string public buyerEvidenceCID;
+    string public sellerEvidenceCID;
     bool public fundsWithdrawn;
     enum State {
         CREATED,
@@ -163,6 +165,16 @@ contract Escrow is Interface_Escrow, ReentrancyGuard {
         (bool success, ) = payable(withdrawer).call{value: amount}("");
         if (!success) {
             revert InvalidState();
+        }
+
+        function submitEvidence(string calldata cid) external {
+            if (msg.sender == buyer){
+                buyerEvidenceCID = cid;
+            } else if (msg.sender == seller){
+                sellerEvidenceCID = cid;
+            } else {
+                revert InvalidState();
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { arbitratorAbi } from '../contracts/abi/Arbitrator'
-import { ARBITRATOR_ADDRESS } from '../contracts/addresses'
+import { ARBITRATOR_CONTRACT_ADDRESS } from '../contracts/addresses'
 import { useState } from 'react'
 
 export function useResolveDispute() {
@@ -16,7 +16,7 @@ export function useResolveDispute() {
         buyerWins: boolean
     ) {
         const txHash = await writeContractAsync({
-            address: ARBITRATOR_ADDRESS,
+            address: ARBITRATOR_CONTRACT_ADDRESS,
             abi: arbitratorAbi,
             functionName: 'resolveEscrow',
             args: [escrowAddress, buyerWins],

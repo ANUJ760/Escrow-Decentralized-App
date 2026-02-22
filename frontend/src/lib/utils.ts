@@ -1,5 +1,8 @@
 import { formatEther, parseEther } from 'viem'
 
+const BACKEND_URL =
+    process.env.NEXT_PUBLIC_AI_BACKEND_URL || "http://localhost:3001";
+
 // Format ETH with proper decimals
 export function formatEthAmount(wei: bigint | undefined, decimals: number = 4): string {
     if (!wei) return '0'
@@ -28,26 +31,32 @@ export function formatTimestamp(timestamp: number): string {
     return new Date(timestamp * 1000).toLocaleString()
 }
 
-
-// Upload file to IPFS (Pinata
-
-
 export async function uploadToIPFS(file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    }
+    const contentBase64 = btoa(binary);
 
-    const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+    const response = await fetch(`${BACKEND_URL}/ipfs/upload`, {
         method: 'POST',
         headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+            'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify({
+            filename: file.name,
+            contentBase64,
+            mimeType: file.type,
+        }),
     });
 
     if (!response.ok) {
-        throw new Error('Failed to upload to IPFS');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to upload to IPFS');
     }
 
     const data = await response.json();
-    return data.IpfsHash;
+    return data.cid as string;
 }

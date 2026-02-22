@@ -14,7 +14,7 @@ escrow/
 ## Tech Stack
 
 - **Smart Contracts**: Solidity, Foundry
-- **Arbitration Engine**: Node.js, Express, OpenAI/OpenRouter (AI-driven verdicts)
+- **Arbitration Engine**: Node.js, Express, OpenAI (AI-driven verdicts)
 - **Frontend**: Next.js 16, TypeScript, Tailwind CSS v4, RainbowKit, Wagmi
 - **Storage**: IPFS (via Pinata) for evidence persistence
 
@@ -24,7 +24,7 @@ This platform features an automated AI arbitration service to resolve disputes f
 1. **Evidence Collection**: Buyers and sellers submit text/image evidence.
 2. **IPFS Storage**: Evidence is pinned to IPFS for decentralization.
 3. **AI Verdict**: When a dispute is raised, the Arbitrator can request an AI verdict.
-4. **Analysis**: The backend fetches evidence from IPFS and uses GPT-4/AI models to analyze the contract terms vs evidence.
+4. **Analysis**: The backend fetches evidence from IPFS and uses an OpenAI model to analyze the contract terms vs evidence.
 5. **Resolution**: The AI provides a weighted recommendation, allowing the Arbitrator to finalize the resolution on-chain.
 
 ## Setup & Installation
@@ -40,7 +40,7 @@ forge test
 ```bash
 cd backend-app
 npm install
-# Setup .env with OPENAI_API_KEY, PINATA_API_KEY, etc.
+# Setup .env with OPENAI_API_KEY and PINATA_JWT
 npm run dev
 ```
 
@@ -61,6 +61,16 @@ npm run dev
 
 ### Frontend (`frontend/.env`)
 - `NEXT_PUBLIC_AI_BACKEND_URL`: URL of the arbitration service (e.g., http://localhost:3001)
+- Do not store Pinata or OpenAI secrets in frontend env variables.
+
+## API Endpoints (Backend)
+
+- `POST /resolve-dispute`:
+  - Body: `{ "cid": "..." }`
+  - Response: `{ "buyerWins": true | false }`
+- `POST /ipfs/upload`:
+  - Body: `{ "filename": "...", "contentBase64": "...", "mimeType": "..." }`
+  - Response: `{ "cid": "..." }`
 
 ## License
 

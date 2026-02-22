@@ -1,6 +1,8 @@
 export const FACTORY_ADDRESS =
   "0x0d499cE611904603a188F0dEd41F1Ab193c2F6a1";
 
-export const ARBITRATOR_ADDRESS =
+export const ARBITRATOR_CONTRACT_ADDRESS =
   "0xF313EEC1a057a6dDaeac857A4dd5e2B83Bd923B6";
 
+// Backward-compatible alias. This is the arbitrator contract address.
+export const ARBITRATOR_ADDRESS = ARBITRATOR_CONTRACT_ADDRESS;

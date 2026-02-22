@@ -3,19 +3,18 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useResolveDispute } from '../../hooks/useResolveDispute';
-import { ARBITRATOR_ADDRESS } from '../../contracts/addresses';
 import TransactionStatus from '../../components/TransactionStatus';
 import { useHydrated } from '../../hooks/useHydrated';
+import { useArbitratorAccess } from '../../hooks/useArbitratorAccess';
 
 export default function ArbitratorPage() {
-    const { address, isConnected } = useAccount();
+    const { isConnected } = useAccount();
     const mounted = useHydrated();
     const [escrowAddress, setEscrowAddress] = useState("");
     const [selectedWinner, setSelectedWinner] = useState<'buyer' | 'seller' | null>(null);
 
     const { resolveDispute, isPending, isConfirming, isSuccess, hash } = useResolveDispute();
-
-    const isArbitrator = address?.toLowerCase() === ARBITRATOR_ADDRESS.toLowerCase();
+    const { isArbitrator, ownerAddress, isOwnerLoading } = useArbitratorAccess();
 
     const handleResolve = async () => {
         if (!selectedWinner || !escrowAddress) return;
@@ -52,7 +51,7 @@ export default function ArbitratorPage() {
                         This dashboard is reserved for the platform&apos;s official arbitrator.
                     </p>
                     <div className="glass-card p-4 font-mono text-xs opacity-50">
-                        Required Address: {ARBITRATOR_ADDRESS}
+                        Required Owner Wallet: {isOwnerLoading ? "Loading..." : ownerAddress ?? "Unavailable"}
                     </div>
                 </div>
             </main>

@@ -1,11 +1,10 @@
 "use client";
 
-import { useAccount } from 'wagmi'
 import { useResolveDispute } from '../hooks/useResolveDispute'
 import { useEscrowDetails } from '../hooks/useEscrowDetails'
 import { useAIVerdict } from '../hooks/useAIVerdict'
 import { useState } from 'react'
-import { ARBITRATOR_ADDRESS } from '../contracts/addresses'
+import { useArbitratorAccess } from '../hooks/useArbitratorAccess'
 import TransactionStatus from './TransactionStatus'
 
 interface DisputeResolutionProps {
@@ -13,13 +12,11 @@ interface DisputeResolutionProps {
 }
 
 export default function DisputeResolution({ escrowAddress }: DisputeResolutionProps) {
-    const { address } = useAccount()
     const { state, buyer, seller, buyerEvidenceCID, sellerEvidenceCID } = useEscrowDetails(escrowAddress)
     const { resolveDispute, isPending, isConfirming, isSuccess, hash } = useResolveDispute()
     const { getVerdict, isLoading: isAILoading, error: aiError } = useAIVerdict()
     const [selectedWinner, setSelectedWinner] = useState<'buyer' | 'seller' | null>(null)
-
-    const isArbitrator = address?.toLowerCase() === ARBITRATOR_ADDRESS.toLowerCase()
+    const { isArbitrator } = useArbitratorAccess()
 
     if (state !== 4) {
         return null

@@ -8,14 +8,6 @@ broadcast/
 artifacts/
 
 #################################
-# Environment / Secrets
-#################################
-
-.env
-.env.*
-!.env.example
-
-#################################
 # Node (if you add frontend later)
 #################################
 

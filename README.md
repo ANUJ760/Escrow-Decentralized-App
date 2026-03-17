@@ -17,6 +17,7 @@ escrow/
 - **Arbitration Engine**: Node.js, Express, OpenAI (AI-driven verdicts)
 - **Frontend**: Next.js 16, TypeScript, Tailwind CSS v4, RainbowKit, Wagmi
 - **Storage**: IPFS (via Pinata) for evidence persistence
+- **Secrets Management**: Infisical (environment-based secret injection)
 
 ## AI Arbitration Workflow
 
@@ -40,26 +41,35 @@ forge test
 ```bash
 cd backend-app
 npm install
-# Setup .env with OPENAI_API_KEY and PINATA_JWT
-npm run dev
+infisical run --env=dev --path=/backend -- npm run dev
 ```
 
 ### 3. Frontend
 ```bash
 cd frontend
 npm install
-# Ensure NEXT_PUBLIC_AI_BACKEND_URL points to the backend
-npm run dev
+infisical run --env=dev --path=/frontend -- npm run dev
+```
+
+Frontend command template:
+```bash
+infisical run --env=dev --path=/frontend -- [your frontend start command]
 ```
 
 ## Environment Variables
 
-### Backend (`backend-app/.env`)
+All local `.env` files have been removed. Runtime environment variables are now injected through Infisical.
+
+Use these Infisical paths:
+- `/backend`: Backend secrets
+- `/frontend`: Frontend secrets
+
+### Backend (`/backend` path in Infisical)
 - `PORT`: Server port (default 3001)
 - `OPENAI_API_KEY`: API key for AI processing
 - `PINATA_JWT`: For IPFS evidence pinning
 
-### Frontend (`frontend/.env`)
+### Frontend (`/frontend` path in Infisical)
 - `NEXT_PUBLIC_AI_BACKEND_URL`: URL of the arbitration service (e.g., http://localhost:3001)
 - Do not store Pinata or OpenAI secrets in frontend env variables.
 

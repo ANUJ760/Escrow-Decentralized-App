@@ -30,6 +30,15 @@ This platform features an automated AI arbitration service to resolve disputes f
 
 ## Setup & Installation
 
+### Infisical Prerequisites
+```bash
+# Install CLI (see official docs for your OS/package manager)
+infisical --version
+
+# Authenticate and select project/environment once
+infisical login
+```
+
 ### 1. Smart Contracts
 ```bash
 cd Backend-Contracts
